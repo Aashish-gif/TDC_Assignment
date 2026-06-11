@@ -1,4 +1,3 @@
-import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono, Playfair_Display } from 'next/font/google'
 import LoaderOverlay from '@/components/LoaderOverlay'
@@ -13,8 +12,8 @@ const geistMono = Geist_Mono({
 const playfair = Playfair_Display({ variable: '--font-playfair', weight: ['400', '700'], subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'The Date Crew Matchmaker',
+  description: 'The Date Crew - Matchmaking Dashboard',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -46,7 +45,6 @@ export default function RootLayout({
         <SplashLoader />
         <LoaderOverlay />
         {children}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
   )
