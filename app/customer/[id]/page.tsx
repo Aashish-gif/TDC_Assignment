@@ -19,61 +19,53 @@ import TabsSection from '@/components/TabsSection'
 import NotesSection from '@/components/NotesSection'
 import MatchPanel from '@/components/MatchPanel'
 
-// Hardcoded profile for Rahul Mehta (c1)
-const CUSTOMER_PROFILE = {
-  id: 'c1',
-  firstName: 'Rahul',
-  lastName: 'Mehta',
-  age: 29,
-  city: 'Mumbai',
-  gender: 'Male',
-  maritalStatus: 'Never Married',
-  stage: 'Verified',
-  lastActivity: '1 day ago',
-  email: 'rahul.mehta@email.com',
-  phone: '+91-98765-43210',
-  bio: 'Passionate about building scalable solutions and exploring new technologies. Loves traveling and photography.',
-
-  // Personal Tab
-  dateOfBirth: '15 Mar 1995',
-  height: '5\'10"',
-  religion: 'Hindu',
-  caste: 'Brahmin',
-  gotra: 'Bharadwaj',
-  motherTongue: 'Hindi',
-  languagesKnown: 'Hindi, English, Gujarati',
-  manglik: 'No',
-  dietaryPreference: 'Vegetarian',
-  complexion: 'Fair',
-  nativePlace: 'Mumbai',
-
-  // Professional Tab
-  undergraduateCollege: 'IIT Mumbai',
-  degree: 'B.Tech Computer Science',
-  currentCompany: 'TechCorp India',
-  designation: 'Senior Software Engineer',
-  annualIncome: '18 LPA',
-
-  // Preferences Tab
-  wantKids: 'Maybe',
-  openToRelocate: 'Yes',
-  openToPets: 'No',
-  horoscopePreference: 'Matching not required',
-  familyTypePreference: 'Nuclear',
-  idealPartnerNotes:
-    'Looking for someone who values family, enjoys adventures, and has a good sense of humor.',
-
-  // Family Tab
-  numberOfSiblings: '1 (Sister)',
-  familyStatus: 'Upper Middle Class',
-  parentsOccupation: 'Father: Business | Mother: Homemaker',
-}
-
 export default function CustomerDetailPage() {
   const params = useParams()
   const router = useRouter()
   const [showMatches, setShowMatches] = useState(false)
+  const [customer, setCustomer] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [updating, setUpdating] = useState(false)
   const customerId = params.id as string
+
+  // Fetch customer data
+  const fetchCustomer = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/customers/${customerId}`)
+      const data = await response.json()
+      setCustomer(data)
+    } catch (error) {
+      console.error('Error fetching customer:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (customerId) {
+      fetchCustomer()
+    }
+  }, [customerId])
+
+  // Handle customer update
+  const handleUpdateCustomer = async (updates: any) => {
+    try {
+      setUpdating(true)
+      const response = await fetch(`http://localhost:5000/api/customers/${customerId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      })
+      
+      if (response.ok) {
+        await fetchCustomer() // Refresh data
+      }
+    } catch (error) {
+      console.error('Error updating customer:', error)
+    } finally {
+      setUpdating(false)
+    }
+  }
 
   const handleGenerateMatches = () => {
     setShowMatches(true)
@@ -81,6 +73,36 @@ export default function CustomerDetailPage() {
 
   const handleBackToDashboard = () => {
     router.push('/dashboard')
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#FDF8F4' }}>
+        <div style={{ color: '#A89E9A' }}>Loading profile...</div>
+      </div>
+    )
+  }
+
+  if (!customer) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#FDF8F4' }}>
+        <div className="text-center">
+          <p style={{ color: '#6B1F2A' }} className="mb-4">Profile not found</p>
+          <button onClick={handleBackToDashboard} className="text-sm underline">Back to Dashboard</button>
+        </div>
+      </div>
+    )
+  }
+
+  // Map backend data to frontend UI structure
+  const profile = {
+    ...customer,
+    dateOfBirth: new Date(customer.dob).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+    annualIncome: `${(customer.income / 100000).toFixed(0)} LPA`,
+    dietaryPreference: customer.diet,
+    numberOfSiblings: customer.siblings,
+    manglik: customer.manglikStatus,
+    horoscopePreference: customer.horoscopeMatch ? 'Required' : 'Not required'
   }
 
   return (
@@ -104,7 +126,7 @@ export default function CustomerDetailPage() {
             style={{ color: '#6B1F2A' }}
           >
             <span className="font-serif text-xl font-bold" style={{ color: '#6B1F2A' }}>
-              TDC Matchmaker
+              The Date Crew Matchmaker
             </span>
             <span style={{ color: '#C9963E' }}>♥</span>
           </button>
@@ -132,9 +154,10 @@ export default function CustomerDetailPage() {
           {/* Left Sidebar - 30% */}
           <div className="lg:col-span-1">
             <CustomerDetailSidebar
-              profile={CUSTOMER_PROFILE}
+              profile={profile}
               onGenerateMatches={handleGenerateMatches}
               onBackToDashboard={handleBackToDashboard}
+              onUpdate={handleUpdateCustomer}
             />
           </div>
 
@@ -144,7 +167,7 @@ export default function CustomerDetailPage() {
               <>
                 {/* Tabs Section */}
                 <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
-                  <TabsSection profile={CUSTOMER_PROFILE} />
+                  <TabsSection profile={profile} />
                 </div>
 
                 {/* Notes Section */}
@@ -159,7 +182,7 @@ export default function CustomerDetailPage() {
                     Ready to Find Matches?
                   </h3>
                   <p className="text-gray-600 mb-4">
-                    Click "Generate Matches" in the sidebar to see compatibility suggestions.
+                    Click "Generate Matches" in the sidebar to see compatibility suggestions for {profile.firstName}.
                   </p>
                 </div>
               </>
