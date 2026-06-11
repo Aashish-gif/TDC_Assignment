@@ -1,0 +1,23 @@
+THE DATE CREW MATCHMAKER MVP - PROJECT WRITEUP
+
+TECH CHOICES
+The Date Crew Matchmaker uses a modern, scalable full-stack architecture. Backend: Node.js with Express.js for fast API development and MongoDB with Mongoose for robust data modeling and schema validation critical for matrimonial profile management. AI: Google Gemini 2.0 Flash (not OpenAI) because it provides high-speed, cost-effective, culturally-aware processing ideal for Indian matrimonial applications, and offers a generous free tier perfect for MVPs. Frontend: Next.js 16 with TypeScript and Tailwind CSS for type safety, responsive design, and rapid UI deployment. Deployment-ready for Vercel (frontend) and Render/Heroku (backend).
+
+MATCHING LOGIC - GENDER-SPECIFIC
+The system uses a 2-step HYBRID matching approach: Algorithmic Pre-Filtering + AI Evaluation. For male customers: Filters for younger women (later DOB), lower/equal income, shorter height, matching children preference, same religion, vegetarian alignment. For female customers: Filters for professional/income compatibility, similar relocation preferences, same city, same religion, cultural alignment. Both genders use MongoDB aggregation with $sample for RANDOMIZED candidate sampling to ensure unique matches per request! If strict criteria gives no results, it automatically relaxes to find compatible matches!
+
+HOW AI IS USED - THREE ENHANCEMENT WAYS
+1. 🌟 SCORE & RANK WITH EXPLANATIONS: Gemini gives compatibility scores (0-100) with labels like "High Potential Match", plus detailed reasoning about cultural, lifestyle, and personal fit.
+2. ✉️ PERSONALIZED INTROS FOR EMAILS: Auto-generates warm, matchmaker-style emails tailored to both profiles, mentioning names, professions, cities, and family values!
+3. 🧠 LLM-BASED CULTURAL REASONING: Uses Gemini's deep Indian cultural understanding to evaluate matches beyond just numerical filters (caste considerations, family background analysis, lifestyle alignment).
+The AI has role prompting, strict JSON response, and smart fallback scoring if API fails!
+
+ASSUMPTIONS MADE
+- Demo accounts are provided (priya/tdc123 and ananya/tdc456)
+- 100+ profiles are pre-seeded with realistic Indian matrimonial data
+- MongoDB database is set up
+- Gemini API key is provided by user
+- Matches are randomized to avoid repetition
+- Profiles are consenting and demo-ready
+
+DATE CREW 2026
