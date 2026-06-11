@@ -25,7 +25,8 @@ export default function DashboardPage() {
   const fetchClients = async () => {
     try {
       setLoading(true)
-      const response = await fetch('https://tdc-assignment-backend.onrender.com/api/customers')
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const response = await fetch(`${apiUrl}/api/customers`)
       const data = await response.json()
       setClients(data)
     } catch (error) {

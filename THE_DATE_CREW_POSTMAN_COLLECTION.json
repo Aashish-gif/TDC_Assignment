@@ -26,13 +26,12 @@
 							"raw": "{\n    \"username\": \"priya\",\n    \"password\": \"tdc123\"\n}"
 						},
 						"url": {
-							"raw": "https://tdc-assignment-backend.onrender.com/api/auth/login",
-							"protocol": "https",
+							"raw": "http://localhost:5000/api/auth/login",
+							"protocol": "http",
 							"host": [
-								"tdc-assignment-backend",
-								"onrender",
-								"com"
+								"localhost"
 							],
+							"port": "5000",
 							"path": [
 								"api",
 								"auth",

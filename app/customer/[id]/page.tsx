@@ -31,7 +31,8 @@ export default function CustomerDetailPage() {
   // Fetch customer data
   const fetchCustomer = async () => {
     try {
-      const response = await fetch(`https://tdc-assignment-backend.onrender.com/api/customers/${customerId}`)
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const response = await fetch(`${apiUrl}/api/customers/${customerId}`)
       const data = await response.json()
       setCustomer(data)
     } catch (error) {
@@ -51,7 +52,8 @@ export default function CustomerDetailPage() {
   const handleUpdateCustomer = async (updates: any) => {
     try {
       setUpdating(true)
-      const response = await fetch(`https://tdc-assignment-backend.onrender.com/api/customers/${customerId}`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const response = await fetch(`${apiUrl}/api/customers/${customerId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates)
