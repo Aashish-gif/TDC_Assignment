@@ -19,16 +19,32 @@ export default function CustomerDetailSidebar({
   profile,
   onGenerateMatches,
   onBackToDashboard,
+  onUpdate,
 }: {
-  profile: Profile
+  profile: any
   onGenerateMatches: () => void
   onBackToDashboard: () => void
+  onUpdate?: (updates: any) => Promise<void>
 }) {
   const [stage, setStage] = useState(profile.stage)
+  const [maritalStatus, setMaritalStatus] = useState(profile.maritalStatus)
 
-  const handleStageChange = (newStage: string) => {
+  const handleStageChange = async (newStage: string) => {
     setStage(newStage)
-    localStorage.setItem(`stage_${profile.id}`, newStage)
+    try {
+      await onUpdate?.({ stage: newStage })
+    } catch (error) {
+      console.error('Error updating stage:', error)
+    }
+  }
+
+  const handleMaritalStatusChange = async (newStatus: string) => {
+    setMaritalStatus(newStatus)
+    try {
+      await onUpdate?.({ maritalStatus: newStatus })
+    } catch (error) {
+      console.error('Error updating marital status:', error)
+    }
   }
 
   const getAvatarUrl = (firstName: string, lastName: string) => {
@@ -68,7 +84,7 @@ export default function CustomerDetailSidebar({
           {profile.firstName} {profile.lastName}
         </h2>
 
-        {/* Age and City with Icons */}
+        {/* Age, City with Icons */}
         <div className="text-center mt-2 flex items-center justify-center gap-4 flex-wrap">
           <div className="flex items-center gap-1" style={{ color: '#A89E9A', fontSize: '14px' }}>
             <Cake size={16} />
@@ -78,6 +94,27 @@ export default function CustomerDetailSidebar({
             <MapPin size={16} />
             <span>{profile.city}</span>
           </div>
+        </div>
+
+        {/* Marital Status Dropdown */}
+        <div className="mt-4 pt-4 border-t" style={{ borderColor: '#EDE4DC' }}>
+          <label className="block text-xs font-semibold uppercase mb-2" style={{ color: '#6B1F2A', letterSpacing: '0.08em' }}>
+            Marital Status
+          </label>
+          <select
+            value={maritalStatus}
+            onChange={(e) => handleMaritalStatusChange(e.target.value)}
+            className="w-full px-4 py-2.5 border rounded-lg text-sm focus:outline-none transition-all"
+            style={{
+              borderColor: '#EDE4DC',
+              color: '#1A1A1A',
+            }}
+          >
+            <option value="Never Married">Never Married</option>
+            <option value="Divorced">Divorced</option>
+            <option value="Widowed">Widowed</option>
+            <option value="Awaiting Divorce">Awaiting Divorce</option>
+          </select>
         </div>
 
         {/* Stage Dropdown */}
