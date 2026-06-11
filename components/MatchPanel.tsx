@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ChevronDown, ChevronUp, ArrowLeft, Loader2 } from 'lucide-react'
 import SendMatchModal from './SendMatchModal'
+import { getApiUrl } from '@/lib/api'
 
 interface Match {
   id: string
@@ -35,8 +36,7 @@ export default function MatchPanel({
     const fetchMatches = async () => {
       try {
         setLoading(true)
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
-        const response = await fetch(`${apiUrl}/api/matches/${customerId}`)
+        const response = await fetch(`${getApiUrl()}/api/matches/${customerId}`)
         const data = await response.json()
         
         // Ensure data is an array

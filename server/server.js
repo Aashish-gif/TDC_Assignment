@@ -24,11 +24,21 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000',
   'https://tdc-assignment-two.vercel.app',
-  'https://tdc-assignment-i9nblspsb-tajcg29082024-2174s-projects.vercel.app',
 ];
 
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 app.use(cors({
-  origin: allowedOrigins,
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    if (origin.startsWith('https://') && origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
   credentials: true,
 }));
 
@@ -56,5 +66,5 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-  console.log(`CORS allowed origins: ${allowedOrigins.join(', ')}`);
+  console.log(`CORS allowed origins: ${allowedOrigins.join(', ')} + *.vercel.app`);
 });

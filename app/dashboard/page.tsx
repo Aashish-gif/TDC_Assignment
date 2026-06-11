@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, Bell, LogOut, Users, CheckCircle, Send, X } from 'lucide-react'
 import CustomerTable from '@/components/CustomerTable'
+import { getApiUrl } from '@/lib/api'
 
 interface Matchmaker {
   id: string
@@ -25,8 +26,7 @@ export default function DashboardPage() {
   const fetchClients = async () => {
     try {
       setLoading(true)
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
-      const response = await fetch(`${apiUrl}/api/customers`)
+      const response = await fetch(`${getApiUrl()}/api/customers`)
       const data = await response.json()
       setClients(data)
     } catch (error) {

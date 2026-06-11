@@ -18,6 +18,7 @@ import CustomerDetailSidebar from '@/components/CustomerDetailSidebar'
 import TabsSection from '@/components/TabsSection'
 import NotesSection from '@/components/NotesSection'
 import MatchPanel from '@/components/MatchPanel'
+import { getApiUrl } from '@/lib/api'
 
 export default function CustomerDetailPage() {
   const params = useParams()
@@ -31,8 +32,7 @@ export default function CustomerDetailPage() {
   // Fetch customer data
   const fetchCustomer = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
-      const response = await fetch(`${apiUrl}/api/customers/${customerId}`)
+      const response = await fetch(`${getApiUrl()}/api/customers/${customerId}`)
       const data = await response.json()
       setCustomer(data)
     } catch (error) {
@@ -52,8 +52,7 @@ export default function CustomerDetailPage() {
   const handleUpdateCustomer = async (updates: any) => {
     try {
       setUpdating(true)
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
-      const response = await fetch(`${apiUrl}/api/customers/${customerId}`, {
+      const response = await fetch(`${getApiUrl()}/api/customers/${customerId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates)
