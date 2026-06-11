@@ -70,7 +70,7 @@ export default function LoginPage() {
           {/* Logo */}
           <div className="flex items-center justify-center gap-2 mb-2">
             <span className="font-serif text-3xl font-bold" style={{ color: '#6B1F2A' }}>
-              TDC Matchmaker
+              The Date Crew Matchmaker
             </span>
             <span className="text-2xl" style={{ color: '#C9963E' }}>
               ♥
@@ -219,16 +219,36 @@ export default function LoginPage() {
           </div>
 
           {showDemo && (
-            <div className="mt-4 p-3 rounded-lg text-xs text-center" style={{ backgroundColor: '#FDFAF7', color: '#6B1F2A' }}>
+            <div className="mt-4 p-3 rounded-lg text-xs text-center space-y-2" style={{ backgroundColor: '#FDFAF7', color: '#6B1F2A' }}>
               <div className="font-medium mb-1">Test Accounts:</div>
-              <div>priya / tdc123</div>
-              <div>ananya / tdc456</div>
+              <button 
+                type="button"
+                onClick={() => {
+                  setUsername('priya')
+                  setPassword('tdc123')
+                }}
+                className="block w-full py-1.5 px-2 border rounded hover:bg-rose-50 transition-colors"
+                style={{ borderColor: '#EDE4DC' }}
+              >
+                Priya (Admin)
+              </button>
+              <button 
+                type="button"
+                onClick={() => {
+                  setUsername('ananya')
+                  setPassword('tdc456')
+                }}
+                className="block w-full py-1.5 px-2 border rounded hover:bg-rose-50 transition-colors"
+                style={{ borderColor: '#EDE4DC' }}
+              >
+                Ananya (Manager)
+              </button>
             </div>
           )}
 
           {/* Footer Text */}
           <p className="text-center text-xs mt-6" style={{ color: '#A89E9A' }}>
-            For internal use only · The Date Crew
+            © 2024 The Date Crew · Internal Matchmaker Portal
           </p>
         </div>
       </div>
