@@ -21,7 +21,10 @@ connectDB().then(() => {
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['https://tdc-assignment-two.vercel.app', 'https://tdc-assignment-ljtft8stp-tajcg29082024-2174s-projects.vercel.app', 'http://localhost:3000'],
+  credentials: true
+}));
 app.use(express.json());
 
 // Routes
