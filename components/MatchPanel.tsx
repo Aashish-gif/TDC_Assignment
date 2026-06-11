@@ -35,7 +35,7 @@ export default function MatchPanel({
     const fetchMatches = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`http://localhost:5000/api/matches/${customerId}`)
+        const response = await fetch(`https://tdc-assignment-backend.onrender.com/api/matches/${customerId}`)
         const data = await response.json()
         
         // Ensure data is an array
