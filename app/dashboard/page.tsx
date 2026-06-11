@@ -12,125 +12,28 @@ interface Matchmaker {
   assignedClients: string[]
 }
 
-const CLIENTS = [
-  {
-    id: 'c1',
-    firstName: 'Rahul',
-    lastName: 'Mehta',
-    age: 29,
-    city: 'Mumbai',
-    gender: 'Male',
-    maritalStatus: 'Never Married',
-    stage: 'Verified',
-    lastActivity: '1 day ago',
-  },
-  {
-    id: 'c2',
-    firstName: 'Sneha',
-    lastName: 'Iyer',
-    age: 26,
-    city: 'Bangalore',
-    gender: 'Female',
-    maritalStatus: 'Never Married',
-    stage: 'Matches Sent',
-    lastActivity: '3 days ago',
-  },
-  {
-    id: 'c3',
-    firstName: 'Arjun',
-    lastName: 'Kapoor',
-    age: 32,
-    city: 'Delhi',
-    gender: 'Male',
-    maritalStatus: 'Divorced',
-    stage: 'In Talks',
-    lastActivity: '5 hours ago',
-  },
-  {
-    id: 'c4',
-    firstName: 'Meera',
-    lastName: 'Nair',
-    age: 27,
-    city: 'Chennai',
-    gender: 'Female',
-    maritalStatus: 'Never Married',
-    stage: 'New Lead',
-    lastActivity: '1 week ago',
-  },
-  {
-    id: 'c5',
-    firstName: 'Vikram',
-    lastName: 'Singh',
-    age: 35,
-    city: 'Pune',
-    gender: 'Male',
-    maritalStatus: 'Widowed',
-    stage: 'Verified',
-    lastActivity: '2 days ago',
-  },
-  {
-    id: 'c6',
-    firstName: 'Pooja',
-    lastName: 'Sharma',
-    age: 24,
-    city: 'Hyderabad',
-    gender: 'Female',
-    maritalStatus: 'Never Married',
-    stage: 'Closed',
-    lastActivity: '2 weeks ago',
-  },
-  {
-    id: 'c7',
-    firstName: 'Rohan',
-    lastName: 'Gupta',
-    age: 30,
-    city: 'Kolkata',
-    gender: 'Male',
-    maritalStatus: 'Never Married',
-    stage: 'Matches Sent',
-    lastActivity: '4 days ago',
-  },
-  {
-    id: 'c8',
-    firstName: 'Divya',
-    lastName: 'Pillai',
-    age: 28,
-    city: 'Kochi',
-    gender: 'Female',
-    maritalStatus: 'Never Married',
-    stage: 'Verified',
-    lastActivity: '6 hours ago',
-  },
-  {
-    id: 'c9',
-    firstName: 'Karan',
-    lastName: 'Malhotra',
-    age: 33,
-    city: 'Ahmedabad',
-    gender: 'Male',
-    maritalStatus: 'Divorced',
-    stage: 'In Talks',
-    lastActivity: '1 day ago',
-  },
-  {
-    id: 'c10',
-    firstName: 'Anita',
-    lastName: 'Desai',
-    age: 25,
-    city: 'Jaipur',
-    gender: 'Female',
-    maritalStatus: 'Never Married',
-    stage: 'New Lead',
-    lastActivity: '3 days ago',
-  },
-]
-
 export default function DashboardPage() {
   const [matchmaker, setMatchmaker] = useState<Matchmaker | null>(null)
+  const [clients, setClients] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [genderFilter, setGenderFilter] = useState('All')
   const [stageFilter, setStageFilter] = useState('All')
   const router = useRouter()
+
+  // Fetch clients function
+  const fetchClients = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('http://localhost:5000/api/customers')
+      const data = await response.json()
+      setClients(data)
+    } catch (error) {
+      console.error('Error fetching clients:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
     const storedMatchmaker = localStorage.getItem('tdc_matchmaker')
@@ -141,14 +44,28 @@ export default function DashboardPage() {
 
     const parsed = JSON.parse(storedMatchmaker) as Matchmaker
     setMatchmaker(parsed)
+
+    fetchClients()
   }, [router])
+
+  // Handle refresh when returning from customer view
+  useEffect(() => {
+    const handleRouteChange = () => {
+      if (window.location.pathname === '/dashboard') {
+        fetchClients()
+      }
+    }
+    
+    window.addEventListener('popstate', handleRouteChange)
+    return () => window.removeEventListener('popstate', handleRouteChange)
+  }, [])
 
   const handleLogout = () => {
     localStorage.removeItem('tdc_matchmaker')
     router.push('/login')
   }
 
-  if (!matchmaker) {
+  if (!matchmaker || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#FDF8F4' }}>
         <div style={{ color: '#A89E9A' }}>Loading...</div>
@@ -157,7 +74,7 @@ export default function DashboardPage() {
   }
 
   // Filter clients
-  let filteredClients = CLIENTS.filter((client) => {
+  let filteredClients = clients.filter((client) => {
     const matchesSearch =
       client.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       client.lastName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -168,11 +85,17 @@ export default function DashboardPage() {
     return matchesSearch && matchesGender && matchesStage
   })
 
-  // Calculate stats
-  const totalClients = CLIENTS.length
-  const verifiedProfiles = CLIENTS.filter((c) => c.stage === 'Verified').length
-  const matchesSent = CLIENTS.filter((c) => c.stage === 'Matches Sent').length
-  const closed = CLIENTS.filter((c) => c.stage === 'Closed').length
+  // Calculate stats with status mapping
+  const totalClients = clients.length
+  const verifiedProfiles = clients.filter((c) => 
+    c.status === 'Verified' || c.stage === 'Verified'
+  ).length
+  const matchesSent = clients.filter((c) => 
+    c.status === 'Matches Sent' || c.stage === 'Matches Sent' || c.status === 'Matched'
+  ).length
+  const closed = clients.filter((c) => 
+    c.status === 'Closed' || c.stage === 'Closed'
+  ).length
 
   const getTodayDate = () => {
     return new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
@@ -195,7 +118,7 @@ export default function DashboardPage() {
           {/* Left */}
           <div className="flex items-center gap-2">
             <span className="font-serif text-xl font-bold" style={{ color: '#6B1F2A' }}>
-              TDC Matchmaker
+              The Date Crew Matchmaker
             </span>
             <span style={{ color: '#C9963E' }}>♥</span>
           </div>
@@ -404,8 +327,10 @@ export default function DashboardPage() {
               }}
             >
               <option value="All">Filter by Stage: All</option>
-              <option value="New Lead">New Lead</option>
+              <option value="Onboarding">Onboarding</option>
               <option value="Verified">Verified</option>
+              <option value="Searching">Searching</option>
+              <option value="In-Pool">In-Pool</option>
               <option value="Matches Sent">Matches Sent</option>
               <option value="In Talks">In Talks</option>
               <option value="Closed">Closed</option>
