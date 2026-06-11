@@ -24,6 +24,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000',
   'https://tdc-assignment-two.vercel.app',
+  'https://tdc-assignment-i9nblspsb-tajcg29082024-2174s-projects.vercel.app',
 ];
 
 app.use(cors({
