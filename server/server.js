@@ -22,8 +22,10 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['https://tdc-assignment-two.vercel.app', 'https://tdc-assignment-ljtft8stp-tajcg29082024-2174s-projects.vercel.app', 'http://localhost:3000'],
-  credentials: true
+  origin: ['https://tdc-assignment-two.vercel.app', 'https://tdc-assignment-ljtft8stp-tajcg29082024-2174s-projects.vercel.app', 'http://localhost:3000', '*'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 

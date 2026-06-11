@@ -14,7 +14,6 @@ const playfair = Playfair_Display({ variable: '--font-playfair', weight: ['400',
 export const metadata: Metadata = {
   title: 'The Date Crew Matchmaker',
   description: 'The Date Crew - Matchmaking Dashboard',
-  generator: 'v0.app',
   icons: {
     icon: [
       {
